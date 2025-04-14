@@ -2,15 +2,10 @@ from typing import Dict
 from models import user_models
 from db import session
 from crud import user_crud
-import logging
 
 from utils import random_utils,time_utils
 
-# 设置日志记录
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
+async def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
     """
     用户手机号登录方法
     :param data: 用户手机号登录数据模型
@@ -66,7 +61,6 @@ def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
 
     except Exception as e:
         # 捕获异常并记录日志
-        logger.error(f"An error occurred during user login: {e}")
         user_info_response = user_models.UserInfoResponse()  # 仍然返回空的用户信息
         return user_models.UserLoginResponse(
             is_allow=False,  # 登录失败
@@ -75,7 +69,7 @@ def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
             user_info_response=user_info_response  # 返回空的用户信息
         )
 
-def user_login_by_email_func(data: user_models.UserLoginByEmailRequest):
+async def user_login_by_email_func(data: user_models.UserLoginByEmailRequest):
     """
     用户邮箱登录方法
     :param data: 用户邮箱登录数据模型
@@ -131,7 +125,6 @@ def user_login_by_email_func(data: user_models.UserLoginByEmailRequest):
 
     except Exception as e:
         # 捕获异常并记录日志
-        logger.error(f"An error occurred during email login: {e}")
         user_info_response = user_models.UserInfoResponse()  # 仍然返回空的用户信息
         return user_models.UserLoginResponse(
             is_allow=False,  # 登录失败
@@ -140,7 +133,7 @@ def user_login_by_email_func(data: user_models.UserLoginByEmailRequest):
             user_info=user_info_response  # 返回空的用户信息
         )
 
-def user_logup_func(data: user_models.UserLogupRequest):
+async def user_logup_func(data: user_models.UserLogupRequest):
     """
     用户注册方法
     :param data:
@@ -152,7 +145,6 @@ def user_logup_func(data: user_models.UserLogupRequest):
     try:
         # 检查用户是否已经存在
         user_info = user_crud.get_user_by_phone(db_session, data.user_phone)
-        logger.info("users_phone: " + data.user_phone)
         if user_info:
             return user_models.UserLogupResponse(
                 is_allow = False,
@@ -181,11 +173,58 @@ def user_logup_func(data: user_models.UserLogupRequest):
 
     except Exception as e:
         # 捕获异常并记录日志
-        logger.error(f"An error occurred during email login: {e}")
         return user_models.UserLoginResponse(
             is_allow=False,
             status=4100,
             message="服务器发生错误",
         )
 
+async def user_update_info_func(data: user_models.UserUpdateInfoRequest):
+    """
+    用户更新信息方法
+    :param data:
+    :return:
+    """
+    # 建立数据库会话
+    db_session = session.get_session()
 
+    # 验证用户是否存在
+    user_info = user_crud.get_user_by_phone(db_session, data.user_phone)
+    try:
+        print(user_info.users_id)
+        if user_info:
+            user_avatar_data =await data.user_avatar.read()  # 读取文件内容
+            print(user_avatar_data)
+
+            # 修改用户信息
+            user_crud.update_user(
+                db=db_session,
+                user_id=user_info.users_id,
+                user_name=data.user_name or user_info.users_name,
+                user_phone=user_info.users_phone,
+                user_email=user_info.users_email,
+                user_role=user_info.users_role,
+                user_status=user_info.users_status,
+                user_pwd=user_info.users_pwd,
+                user_avatar=user_avatar_data or user_info.users_avatar,  # 使用文件内容（二进制数据）
+                user_gender=data.user_gender or user_info.users_gender,
+                user_intro=data.user_intro or user_info.users_intro,
+                user_job=data.user_job or user_info.users_job,
+                user_exp=data.user_exp or user_info.users_exp,
+                user_registeredAt=user_info.users_registeredAt,
+                user_lastLogin=user_info.users_lastLogin
+            )
+            return user_models.UserUpdateInfoResponse(
+                status=200,
+                message="更新成功"
+            )
+
+        return user_models.UserUpdateInfoResponse(
+            status=200,
+            message="更新失败，用户不存在"
+        )
+    except Exception as e:
+        return user_models.UserUpdateInfoResponse(
+            status=4200,
+            message="服务器发生错误"
+        )
