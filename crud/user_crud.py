@@ -25,7 +25,13 @@ def update_user(db: Session,
                 user_status: str = None,
                 user_registeredAt: str = None,
                 user_lastLogin: str = None,
-                user_pwd: str = None):
+                user_pwd: str = None,
+                user_avatar: bytes  = None,
+                user_gender: str = None,
+                user_exp: str = None,
+                user_job: str = None,
+                user_intro: str = None):
+
     db_user = db.query(User).filter(User.users_id == user_id).first()
     if db_user:
         db_user.users_name = user_name
@@ -35,8 +41,12 @@ def update_user(db: Session,
         db_user.users_status = user_status
         db_user.users_registeredAt = user_registeredAt
         db_user.users_lastLogin = user_lastLogin
-        if user_pwd:
-            db_user.users_pwd = user_pwd
+        db_user.users_avatar = user_avatar
+        db_user.users_gender = user_gender
+        db_user.users_exp = user_exp
+        db_user.users_job = user_job
+        db_user.users_intro = user_intro
+        db_user.users_pwd = user_pwd
         db.commit()
         db.refresh(db_user)
     return db_user

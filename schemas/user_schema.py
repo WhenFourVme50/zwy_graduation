@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, Enum, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Enum
+
+from sqlalchemy import Integer, String, Date,BLOB,LargeBinary
+from sqlalchemy import Enum,Column
 
 # 创建基类
 Base = declarative_base()
@@ -18,3 +19,9 @@ class User(Base):
     users_registeredAt = Column(Date, nullable=False)
     users_lastLogin = Column(Date, nullable=False)
     users_pwd = Column(String,nullable=False)
+    users_avatar = Column(LargeBinary, nullable=False)
+    users_gender = Column(Enum('男', '女', '其他'), nullable=True)
+    users_exp = Column(String, nullable=True)
+    users_job = Column(String, nullable=True)
+    users_intro = Column(String, nullable=True)
+
