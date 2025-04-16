@@ -163,7 +163,12 @@ async def user_logup_func(data: user_models.UserLogupRequest):
             user_status = "active",
             user_registeredAt = time_utils.get_current_date(),
             user_lastLogin = time_utils.get_current_date(),
-            user_pwd = data.user_pwd
+            user_pwd = data.user_pwd,
+            user_gender = "其他",
+            user_avatar = None,
+            user_exp = "暂无养宠经验",
+            user_job = "暂无",
+            user_intro = " "
         )
         return user_models.UserLogupResponse(
             is_allow = True,
@@ -173,6 +178,7 @@ async def user_logup_func(data: user_models.UserLogupRequest):
 
     except Exception as e:
         # 捕获异常并记录日志
+        print(e)
         return user_models.UserLoginResponse(
             is_allow=False,
             status=4100,
