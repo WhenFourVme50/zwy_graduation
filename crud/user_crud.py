@@ -60,7 +60,13 @@ def add_user(db: Session,
             user_status: str = None,
             user_registeredAt: datetime.datetime = None,
             user_lastLogin: datetime.datetime = None,
-            user_pwd: str = None):
+            user_pwd: str = None,
+            user_avatar: bytes = None,
+            user_gender: str = "其他",
+            user_exp: str = "暂无",
+            user_job: str = "暂无",
+            user_intro: str = " "):
+
     db_user = User(
         users_id = user_id,
         users_name = user_name,
@@ -70,7 +76,12 @@ def add_user(db: Session,
         users_status = user_status,
         users_registeredAt = user_registeredAt,
         users_lastLogin = user_lastLogin,
-        users_pwd = user_pwd
+        users_pwd = user_pwd,
+        users_avatar = user_avatar,
+        users_gender = user_gender,
+        users_exp = user_exp,
+        users_job = user_job,
+        users_intro = user_intro
     )
     db.add(db_user)
     db.commit()
