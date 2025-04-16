@@ -24,4 +24,5 @@ class User(Base):
     users_exp = Column(String, nullable=True)
     users_job = Column(String, nullable=True)
     users_intro = Column(String, nullable=True)
+    users_birthday = Column(Date, nullable=False,default='2025-01-01')
 

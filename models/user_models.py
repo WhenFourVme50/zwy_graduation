@@ -61,6 +61,7 @@ class UserUpdateInfoRequest(BaseModel):
     user_exp : Optional[str] = Form(None)
     user_job : Optional[str] = Form(None)
     user_intro : Optional[str] = Form(None)
+    user_birthday : Optional[str] = Form(None)
 
 class UserUpdateInfoResponse(BaseResponse):
     ...

@@ -30,7 +30,8 @@ def update_user(db: Session,
                 user_gender: str = None,
                 user_exp: str = None,
                 user_job: str = None,
-                user_intro: str = None):
+                user_intro: str = None,
+                user_birthday: str = None):
 
     db_user = db.query(User).filter(User.users_id == user_id).first()
     if db_user:
@@ -47,6 +48,7 @@ def update_user(db: Session,
         db_user.users_job = user_job
         db_user.users_intro = user_intro
         db_user.users_pwd = user_pwd
+        db_user.users_birthday = user_birthday
         db.commit()
         db.refresh(db_user)
     return db_user
@@ -65,7 +67,8 @@ def add_user(db: Session,
             user_gender: str = "其他",
             user_exp: str = "暂无",
             user_job: str = "暂无",
-            user_intro: str = " "):
+            user_intro: str = " ",
+            user_birthday: str = '2025-01-01'):
 
     db_user = User(
         users_id = user_id,
@@ -81,7 +84,8 @@ def add_user(db: Session,
         users_gender = user_gender,
         users_exp = user_exp,
         users_job = user_job,
-        users_intro = user_intro
+        users_intro = user_intro,
+        users_birthday = user_birthday
     )
     db.add(db_user)
     db.commit()

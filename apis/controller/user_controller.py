@@ -168,7 +168,9 @@ async def user_logup_func(data: user_models.UserLogupRequest):
             user_avatar = None,
             user_exp = "暂无养宠经验",
             user_job = "暂无",
-            user_intro = " "
+            user_intro = " ",
+            user_birthday = '2025-01-01'
+
         )
         return user_models.UserLogupResponse(
             is_allow = True,
@@ -218,7 +220,8 @@ async def user_update_info_func(data: user_models.UserUpdateInfoRequest):
                 user_job=data.user_job or user_info.users_job,
                 user_exp=data.user_exp or user_info.users_exp,
                 user_registeredAt=user_info.users_registeredAt,
-                user_lastLogin=user_info.users_lastLogin
+                user_lastLogin=user_info.users_lastLogin,
+                user_birthday = user_info.users_birthday
             )
             return user_models.UserUpdateInfoResponse(
                 status=200,
