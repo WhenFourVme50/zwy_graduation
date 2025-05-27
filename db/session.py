@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # 创建数据库引擎
-DATABASE_URL = "mysql+mysqlconnector://root:li040214@localhost/zwy_graduation"
+DATABASE_URL = "mysql+mysqlconnector://root:li040214@localhost/stray_animal_adoption"
 engine = create_engine(DATABASE_URL, echo=True)
 
 # 创建 session

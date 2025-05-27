@@ -10,4 +10,184 @@ Accept: application/json
 
 ###
 
+# 用户邮箱登录测试
 POST http://127.0.0.1:8001/user/login_by_email
+Content-Type: application/json
+
+{
+  "user_email": "test@example.com",
+  "user_pwd": "password123"
+}
+
+###
+
+# 用户手机号登录测试
+POST http://127.0.0.1:8001/user/login_by_phone
+Content-Type: application/json
+
+{
+  "user_phone": "13800138000",
+  "user_pwd": "password123"
+}
+
+###
+
+# 新的用户注册接口测试
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "email": "testuser001@example.com",
+  "phone": "13800138001",
+  "password": "password123",
+  "name": "张三",
+  "user_type": "user",
+  "gender": "male",
+  "birthday": "1995-05-15",
+  "address": "北京市朝阳区某某街道123号",
+  "occupation": "软件工程师",
+  "pet_experience": "experienced"
+}
+
+###
+
+# 志愿者注册测试
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "volunteer001",
+  "email": "volunteer001@example.com",
+  "phone": "13800138002",
+  "password": "password123",
+  "name": "李四",
+  "user_type": "volunteer",
+  "gender": "female",
+  "birthday": "1990-03-20",
+  "address": "上海市浦东新区某某路456号",
+  "occupation": "教师",
+  "pet_experience": "expert"
+}
+
+###
+
+# 收容所管理员注册测试
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "shelter_admin001",
+  "email": "admin001@shelter.com",
+  "phone": "13800138003",
+  "password": "admin123456",
+  "name": "王五",
+  "user_type": "shelter_admin",
+  "gender": "other",
+  "birthday": "1985-12-10",
+  "address": "广州市天河区某某大道789号",
+  "occupation": "动物保护专家",
+  "pet_experience": "expert"
+}
+
+###
+
+# 最小必填字段注册测试
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "minimaluser",
+  "email": "minimal@example.com",
+  "phone": "13800138004",
+  "password": "password123",
+  "name": "赵六"
+}
+
+###
+
+# 原有用户注册接口测试（保持兼容性）
+POST http://127.0.0.1:8001/user/logup
+Content-Type: application/json
+
+{
+  "user_name": "olduser",
+  "user_email": "olduser@example.com",
+  "user_phone": "13800138005",
+  "user_pwd": "password123"
+}
+
+###
+
+# 用户信息更新测试
+POST http://127.0.0.1:8001/user/update_info
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_phone"
+
+13800138001
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_name"
+
+张三更新
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_gender"
+
+male
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_exp"
+
+expert
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_job"
+
+高级软件工程师
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user_intro"
+
+我是一名热爱动物的软件工程师，有丰富的养宠经验。
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# 测试重复用户名注册（应该失败）
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "email": "duplicate@example.com",
+  "phone": "13800138099",
+  "password": "password123",
+  "name": "重复用户名测试"
+}
+
+###
+
+# 测试重复邮箱注册（应该失败）
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "uniqueuser",
+  "email": "testuser001@example.com",
+  "phone": "13800138098",
+  "password": "password123",
+  "name": "重复邮箱测试"
+}
+
+###
+
+# 测试无效生日格式（应该失败）
+POST http://127.0.0.1:8001/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "invaliddate",
+  "email": "invaliddate@example.com",
+  "phone": "13800138097",
+  "password": "password123",
+  "name": "无效日期测试",
+  "birthday": "1995-13-32"
+}

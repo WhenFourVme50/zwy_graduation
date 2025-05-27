@@ -1,9 +1,99 @@
 from typing import Dict
+from datetime import datetime, date
+import hashlib
 from models import user_models
 from db import session
 from crud import user_crud
 
-from utils import random_utils,time_utils
+from utils import random_utils, time_utils
+
+async def user_register_func(data: user_models.UserRegisterRequest):
+    """
+    新的用户注册方法
+    :param data: 用户注册数据模型
+    :return: 注册响应
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 检查用户名是否已存在
+        existing_user = user_crud.get_user_by_username(db_session, data.username)
+        if existing_user:
+            return user_models.UserRegisterResponse(
+                code=400,
+                message="用户名已存在"
+            )
+        
+        # 检查邮箱是否已存在
+        existing_email = user_crud.get_user_by_email(db_session, data.email)
+        if existing_email:
+            return user_models.UserRegisterResponse(
+                code=400,
+                message="邮箱已被注册"
+            )
+        
+        # 检查手机号是否已存在
+        existing_phone = user_crud.get_user_by_phone(db_session, data.phone)
+        if existing_phone:
+            return user_models.UserRegisterResponse(
+                code=400,
+                message="手机号已被注册"
+            )
+        
+        # 密码加密
+        password_hash = hashlib.sha256(data.password.encode()).hexdigest()
+        
+        # 处理生日格式
+        birthday = None
+        if data.birthday:
+            try:
+                birthday = datetime.strptime(data.birthday, "%Y-%m-%d").date()
+            except ValueError:
+                return user_models.UserRegisterResponse(
+                    code=400,
+                    message="生日格式错误，请使用YYYY-MM-DD格式"
+                )
+        
+        # 创建用户
+        new_user = user_crud.create_user(
+            db=db_session,
+            username=data.username,
+            email=data.email,
+            phone=data.phone,
+            password_hash=password_hash,
+            name=data.name,
+            user_type=data.user_type,
+            gender=data.gender,
+            birthday=birthday,
+            address=data.address,
+            occupation=data.occupation,
+            pet_experience=data.pet_experience
+        )
+        
+        # 构造响应数据
+        response_data = user_models.UserRegisterData(
+            user_id=new_user.user_id,
+            username=new_user.username,
+            email=new_user.email,
+            user_type=new_user.user_type,
+            status=new_user.status,
+            created_at=new_user.created_at
+        )
+        
+        return user_models.UserRegisterResponse(
+            code=200,
+            message="注册成功",
+            data=response_data
+        )
+        
+    except Exception as e:
+        print(f"Registration error: {e}")
+        return user_models.UserRegisterResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
 
 async def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
     """
@@ -19,18 +109,18 @@ async def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
         user_info = user_crud.get_user_by_phone(db_session, data.user_phone)
 
         if user_info:
-            # 检查密码是否匹配
-            if user_info.users_pwd == data.user_pwd:
+            # 检查密码是否匹配（需要适配新的字段名）
+            if user_info.password_hash == data.user_pwd:
                 # 创建UserInfoResponse对象
                 user_info_response = user_models.UserInfoResponse(
-                    user_id=user_info.users_id,
-                    user_name=user_info.users_name,
-                    user_email=user_info.users_email,
-                    user_phone=user_info.users_phone,
-                    user_role=user_info.users_role,
-                    user_registeredAt=user_info.users_registeredAt,
-                    user_lastLogin=user_info.users_lastLogin,
-                    user_status=user_info.users_status,
+                    user_id=user_info.user_id,
+                    user_name=user_info.username,
+                    user_email=user_info.email,
+                    user_phone=user_info.phone,
+                    user_role=user_info.user_type,
+                    user_registeredAt=user_info.created_at,
+                    user_lastLogin=user_info.last_login_at,
+                    user_status=user_info.status,
                 )
 
                 # 返回登录响应
@@ -38,35 +128,35 @@ async def user_login_by_phone_func(data: user_models.UserLoginByPhoneRequest):
                     is_allow=True,
                     status=200,
                     message="登录成功",
-                    user_info_response=user_info_response  # 返回用户信息
+                    user_info_response=user_info_response
                 )
 
             # 如果密码不匹配，返回密码错误
-            user_info_response = user_models.UserInfoResponse()  # 仍然返回空的用户信息
+            user_info_response = user_models.UserInfoResponse()
             return user_models.UserLoginResponse(
-                is_allow=False,  # 登录失败
-                status=3102,  # 密码错误状态码
+                is_allow=False,
+                status=3102,
                 message="密码错误",
-                user_info_response=user_info_response  # 返回空的用户信息
+                user_info_response=user_info_response
             )
 
         # 如果用户不存在，返回用户不存在
-        user_info_response = user_models.UserInfoResponse()  # 仍然返回空的用户信息
+        user_info_response = user_models.UserInfoResponse()
         return user_models.UserLoginResponse(
-            is_allow=False,  # 登录失败
-            status=3101,  # 用户不存在状态码
+            is_allow=False,
+            status=3101,
             message="用户不存在",
-            user_info_response=user_info_response  # 返回空的用户信息
+            user_info_response=user_info_response
         )
 
     except Exception as e:
         # 捕获异常并记录日志
-        user_info_response = user_models.UserInfoResponse()  # 仍然返回空的用户信息
+        user_info_response = user_models.UserInfoResponse()
         return user_models.UserLoginResponse(
-            is_allow=False,  # 登录失败
-            status=4100,  # 服务器错误状态码
+            is_allow=False,
+            status=4100,
             message="服务器发生错误",
-            user_info_response=user_info_response  # 返回空的用户信息
+            user_info_response=user_info_response
         )
 
 async def user_login_by_email_func(data: user_models.UserLoginByEmailRequest):

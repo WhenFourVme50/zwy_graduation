@@ -1,13 +1,40 @@
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
-from typing import Optional
-
+from datetime import datetime, date
+from typing import Optional, Literal
 from fastapi import UploadFile, File, Form
 
 
 class BaseResponse(BaseModel):
-    status: int = None
-    message: str = None
+    code: int
+    message: str
+    data: Optional[dict] = None
+
+# 新的用户注册请求模型
+class UserRegisterRequest(BaseModel):
+    username: str                                    # 用户名，3-50字符
+    email: EmailStr                                  # 邮箱地址
+    phone: str                                       # 手机号码
+    password: str                                    # 密码，8-20字符
+    name: str                                        # 真实姓名
+    user_type: Literal["user", "shelter_admin", "volunteer"] = "user"  # 用户类型
+    gender: Literal["male", "female", "other"] = "other"               # 性别
+    birthday: Optional[str] = None                   # 生日 YYYY-MM-DD
+    address: Optional[str] = None                    # 地址
+    occupation: Optional[str] = None                 # 职业
+    pet_experience: Literal["none", "beginner", "experienced", "expert"] = "none"  # 养宠经验
+
+# 用户注册响应数据模型
+class UserRegisterData(BaseModel):
+    user_id: str
+    username: str
+    email: str
+    user_type: str
+    status: str
+    created_at: datetime
+
+# 用户注册响应模型
+class UserRegisterResponse(BaseResponse):
+    data: Optional[UserRegisterData] = None
 
 # 用户邮箱登录请求模型
 class UserLoginByEmailRequest(BaseModel):
