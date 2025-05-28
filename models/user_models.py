@@ -93,3 +93,62 @@ class UserUpdateInfoRequest(BaseModel):
 class UserUpdateInfoResponse(BaseResponse):
     ...
 
+# 用户详细信息响应模型
+class UserDetailResponse(BaseModel):
+    user_id: str
+    username: str
+    email: str
+    phone: str
+    name: Optional[str]
+    gender: Optional[str]
+    birthday: Optional[str]
+    address: Optional[str]
+    avatar_url: Optional[str]
+    bio: Optional[str]
+    pet_experience: Optional[str]
+    occupation: Optional[str]
+    living_condition: Optional[str]
+    family_members: Optional[int]
+    has_other_pets: Optional[bool]
+    user_type: str
+    status: str
+    created_at: str
+
+# 获取用户信息响应模型
+class GetUserResponse(BaseResponse):
+    data: Optional[UserDetailResponse] = None
+
+# 更新用户信息请求模型
+class UpdateUserRequest(BaseModel):
+    name: Optional[str] = None
+    gender: Optional[Literal["male", "female", "other"]] = None
+    birthday: Optional[str] = None
+    address: Optional[str] = None
+    bio: Optional[str] = None
+    occupation: Optional[str] = None
+    living_condition: Optional[str] = None
+    family_members: Optional[int] = None
+    has_other_pets: Optional[bool] = None
+
+# 更新用户信息响应模型
+class UpdateUserResponse(BaseResponse):
+    data: Optional[UserDetailResponse] = None
+
+# 上传头像响应模型
+class UploadAvatarResponse(BaseResponse):
+    data: Optional[dict] = None
+
+# 用户统计信息数据模型
+class UserStatisticsData(BaseModel):
+    total_applications: int = 0           # 总申请数
+    successful_adoptions: int = 0         # 成功领养数
+    total_donations: int = 0              # 总捐赠次数
+    total_donated_amount: float = 0.0     # 总捐赠金额
+    activities_participated: int = 0       # 参与活动数
+    total_volunteer_hours: float = 0.0    # 总志愿服务时长
+    favorite_animals: int = 0             # 收藏动物数
+
+# 用户统计信息响应模型
+class UserStatisticsResponse(BaseResponse):
+    data: Optional[UserStatisticsData] = None
+

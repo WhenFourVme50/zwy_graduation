@@ -7,6 +7,10 @@ from crud import user_crud
 
 from utils import random_utils, time_utils
 
+import os
+import uuid
+from fastapi import UploadFile
+
 async def user_register_func(data: user_models.UserRegisterRequest):
     """
     新的用户注册方法
@@ -327,3 +331,233 @@ async def user_update_info_func(data: user_models.UserUpdateInfoRequest):
             status=4200,
             message="服务器发生错误"
         )
+
+async def get_user_func(user_id: str):
+    """
+    获取用户信息
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 获取用户信息
+        user = user_crud.get_user_by_id(db_session, user_id)
+        if not user:
+            return user_models.GetUserResponse(
+                code=404,
+                message="用户不存在"
+            )
+        
+        # 构造响应数据
+        user_data = user_models.UserDetailResponse(
+            user_id=user.user_id,
+            username=user.username,
+            email=user.email,
+            phone=user.phone,
+            name=user.name,
+            gender=user.gender,
+            birthday=user.birthday.strftime("%Y-%m-%d") if user.birthday else None,
+            address=user.address,
+            avatar_url=user.avatar_url,
+            bio=user.bio,
+            pet_experience=user.pet_experience,
+            occupation=user.occupation,
+            living_condition=user.living_condition,
+            family_members=user.family_members,
+            has_other_pets=user.has_other_pets,
+            user_type=user.user_type,
+            status=user.status,
+            created_at=user.created_at.isoformat() if user.created_at else None
+        )
+        
+        return user_models.GetUserResponse(
+            code=200,
+            message="获取成功",
+            data=user_data
+        )
+        
+    except Exception as e:
+        print(f"Get user error: {e}")
+        return user_models.GetUserResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
+
+async def update_user_func(user_id: str, data: user_models.UpdateUserRequest):
+    """
+    更新用户信息
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 检查用户是否存在
+        user = user_crud.get_user_by_id(db_session, user_id)
+        if not user:
+            return user_models.UpdateUserResponse(
+                code=404,
+                message="用户不存在"
+            )
+        
+        # 准备更新数据
+        update_data = {}
+        if data.name is not None:
+            update_data['name'] = data.name
+        if data.gender is not None:
+            update_data['gender'] = data.gender
+        if data.birthday is not None:
+            update_data['birthday'] = data.birthday
+        if data.address is not None:
+            update_data['address'] = data.address
+        if data.bio is not None:
+            update_data['bio'] = data.bio
+        if data.occupation is not None:
+            update_data['occupation'] = data.occupation
+        if data.living_condition is not None:
+            update_data['living_condition'] = data.living_condition
+        if data.family_members is not None:
+            update_data['family_members'] = data.family_members
+        if data.has_other_pets is not None:
+            update_data['has_other_pets'] = data.has_other_pets
+        
+        # 更新用户信息
+        updated_user = user_crud.update_user_info(db_session, user_id, update_data)
+        if not updated_user:
+            return user_models.UpdateUserResponse(
+                code=400,
+                message="更新失败"
+            )
+        
+        # 构造响应数据
+        user_data = user_models.UserDetailResponse(
+            user_id=updated_user.user_id,
+            username=updated_user.username,
+            email=updated_user.email,
+            phone=updated_user.phone,
+            name=updated_user.name,
+            gender=updated_user.gender,
+            birthday=updated_user.birthday.strftime("%Y-%m-%d") if updated_user.birthday else None,
+            address=updated_user.address,
+            avatar_url=updated_user.avatar_url,
+            bio=updated_user.bio,
+            pet_experience=updated_user.pet_experience,
+            occupation=updated_user.occupation,
+            living_condition=updated_user.living_condition,
+            family_members=updated_user.family_members,
+            has_other_pets=updated_user.has_other_pets,
+            user_type=updated_user.user_type,
+            status=updated_user.status,
+            created_at=updated_user.created_at.isoformat() if updated_user.created_at else None
+        )
+        
+        return user_models.UpdateUserResponse(
+            code=200,
+            message="更新成功",
+            data=user_data
+        )
+        
+    except Exception as e:
+        print(f"Update user error: {e}")
+        return user_models.UpdateUserResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
+
+async def upload_avatar_func(user_id: str, avatar: UploadFile):
+    """
+    上传用户头像
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 检查用户是否存在
+        user = user_crud.get_user_by_id(db_session, user_id)
+        if not user:
+            return user_models.UploadAvatarResponse(
+                code=404,
+                message="用户不存在"
+            )
+        
+        # 检查文件类型
+        if not avatar.content_type.startswith('image/'):
+            return user_models.UploadAvatarResponse(
+                code=400,
+                message="只能上传图片文件"
+            )
+        
+        # 检查文件大小（限制5MB）
+        if avatar.size > 5 * 1024 * 1024:
+            return user_models.UploadAvatarResponse(
+                code=400,
+                message="文件大小不能超过5MB"
+            )
+        
+        # 生成文件名
+        file_extension = avatar.filename.split('.')[-1] if '.' in avatar.filename else 'jpg'
+        filename = f"{user_id}_{uuid.uuid4().hex}.{file_extension}"
+        
+        # 创建上传目录
+        upload_dir = "static/avatars"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # 保存文件
+        file_path = os.path.join(upload_dir, filename)
+        with open(file_path, "wb") as buffer:
+            content = await avatar.read()
+            buffer.write(content)
+        
+        # 构造头像URL
+        avatar_url = f"/static/avatars/{filename}"
+        
+        # 更新数据库
+        user_crud.update_user_avatar(db_session, user_id, avatar_url)
+        
+        return user_models.UploadAvatarResponse(
+            code=200,
+            message="头像上传成功",
+            data={"avatar_url": avatar_url}
+        )
+        
+    except Exception as e:
+        print(f"Upload avatar error: {e}")
+        return user_models.UploadAvatarResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
+
+async def get_user_statistics_func(user_id: str):
+    """
+    获取用户统计信息
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 获取统计信息
+        statistics = user_crud.get_user_statistics(db_session, user_id)
+        if statistics is None:
+            return user_models.UserStatisticsResponse(
+                code=404,
+                message="用户不存在"
+            )
+        
+        # 构造响应数据
+        stats_data = user_models.UserStatisticsData(**statistics)
+        
+        return user_models.UserStatisticsResponse(
+            code=200,
+            message="获取成功",
+            data=stats_data
+        )
+        
+    except Exception as e:
+        print(f"Get statistics error: {e}")
+        return user_models.UserStatisticsResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
