@@ -39,6 +39,7 @@ class Shelter(Base):
 
     # 关系
     admins = relationship("ShelterAdmin", back_populates="shelter", cascade="all, delete-orphan")
+    animals = relationship("Animal", back_populates="shelter")
 
 
 # 救助站管理员关联模型

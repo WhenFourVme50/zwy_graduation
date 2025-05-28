@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from apis.user_apis import router as user_routers
 from apis.shelter_apis import router as shelter_routers
+from apis.animal_apis import router as animal_routers
 
 app = FastAPI()
 
@@ -14,8 +16,12 @@ app.add_middleware(
     allow_headers=["*"],  # 允许所有请求头
 )
 
+# 静态文件服务
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(user_routers, prefix="/user")
 app.include_router(shelter_routers, prefix="/shelter")
+app.include_router(animal_routers, prefix="/animal")
 
 @app.get("/")
 async def root():

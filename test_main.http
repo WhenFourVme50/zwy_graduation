@@ -276,3 +276,466 @@ Accept: application/json
 # 测试不存在的救助站
 GET http://127.0.0.1:8001/shelter/shelters/00000000-0000-0000-0000-000000000000
 Accept: application/json
+
+###
+
+# 获取动物列表
+GET http://127.0.0.1:8001/animal/animals
+Accept: application/json
+
+###
+
+# 获取动物列表（带筛选）
+GET http://127.0.0.1:8001/animal/animals?page=1&size=5&species=cat&status=available&good_with_kids=true
+Accept: application/json
+
+###
+
+# 搜索动物
+GET http://127.0.0.1:8001/animal/animals?keyword=小白&page=1&size=10
+Accept: application/json
+
+###
+
+# 创建动物信息
+POST http://127.0.0.1:8001/animal/animals
+Content-Type: application/json
+
+{
+  "name": "小白",
+  "species": "cat",
+  "breed": "中华田园猫",
+  "age": 12,
+  "gender": "female",
+  "size": "medium",
+  "weight": 3.5,
+  "color": "白色",
+  "description": "温顺可爱的小猫",
+  "personality": ["温顺", "活泼"],
+  "health_status": "健康",
+  "medical_history": [],
+  "is_neutered": true,
+  "is_vaccinated": true,
+  "vaccination_records": [],
+  "special_needs": "无",
+  "good_with_kids": true,
+  "good_with_pets": true,
+  "energy_level": "medium",
+  "training_level": "basic",
+  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "location": "救助站",
+  "rescue_date": "2024-01-01",
+  "rescue_story": "在街头被发现",
+  "adoption_fee": 200.00
+}
+
+###
+
+# 获取动物详情
+GET http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+Accept: application/json
+
+###
+
+# 更新动物信息
+PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{
+  "description": "更新后的描述",
+  "status": "pending",
+  "adoption_fee": 250.00
+}
+
+###
+
+# 获取推荐动物
+GET http://127.0.0.1:8001/animal/animals/recommendations?limit=5
+Accept: application/json
+
+###
+
+# 上传动物图片
+POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="cat1.jpg"
+Content-Type: image/jpeg
+
+< ./test_images/cat1.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="cat2.jpg"
+Content-Type: image/jpeg
+
+< ./test_images/cat2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="alt_text"
+
+小白的正面照片
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="alt_text"
+
+小白的侧面照片
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="is_primary"
+
+true
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="is_primary"
+
+false
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# 删除动物信息
+DELETE http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+Accept: application/json
+
+###
+
+# 测试不存在的动物
+GET http://127.0.0.1:8001/animal/animals/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+###
+
+# 按城市筛选动物
+GET http://127.0.0.1:8001/animal/animals?city=北京&status=available&page=1&size=10
+Accept: application/json
+
+###
+
+# 按物种和年龄段筛选
+GET http://127.0.0.1:8001/animal/animals?species=dog&age_category=young&good_with_kids=true&is_neutered=true
+Accept: application/json
+
+###
+
+# 按领养费用范围筛选（需要添加到API中）
+GET http://127.0.0.1:8001/animal/animals?min_fee=0&max_fee=500&sort=adoption_fee&order=asc
+Accept: application/json
+
+###
+
+# 创建狗狗信息
+POST http://127.0.0.1:8001/animal/animals
+Content-Type: application/json
+
+{
+  "name": "大黄",
+  "species": "dog",
+  "breed": "金毛寻回犬",
+  "age": 24,
+  "age_category": "adult",
+  "gender": "male",
+  "size": "large",
+  "weight": 28.5,
+  "color": "金黄色",
+  "description": "温顺友好的大型犬，非常适合家庭饲养",
+  "personality": ["友好", "忠诚", "活泼"],
+  "health_status": "健康",
+  "medical_history": [
+    {
+      "date": "2024-01-15",
+      "type": "vaccination",
+      "description": "六联疫苗"
+    },
+    {
+      "date": "2024-02-01",
+      "type": "surgery",
+      "description": "绝育手术"
+    }
+  ],
+  "is_neutered": true,
+  "is_vaccinated": true,
+  "vaccination_records": [
+    {
+      "vaccine": "六联疫苗",
+      "date": "2024-01-15",
+      "next_due": "2025-01-15"
+    },
+    {
+      "vaccine": "狂犬疫苗",
+      "date": "2024-01-20",
+      "next_due": "2025-01-20"
+    }
+  ],
+  "special_needs": "需要大量运动空间",
+  "good_with_kids": true,
+  "good_with_pets": true,
+  "energy_level": "high",
+  "training_level": "intermediate",
+  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "location": "救助站后院",
+  "rescue_date": "2023-12-01",
+  "rescue_story": "主人搬家无法继续饲养，主动送到救助站",
+  "adoption_fee": 500.00
+}
+
+###
+
+# 创建兔子信息
+POST http://127.0.0.1:8001/animal/animals
+Content-Type: application/json
+
+{
+  "name": "雪球",
+  "species": "rabbit",
+  "breed": "荷兰兔",
+  "age": 8,
+  "age_category": "young",
+  "gender": "female",
+  "size": "small",
+  "weight": 1.2,
+  "color": "白色",
+  "description": "可爱的小兔子，性格温顺",
+  "personality": ["温顺", "安静"],
+  "health_status": "健康",
+  "medical_history": [],
+  "is_neutered": false,
+  "is_vaccinated": true,
+  "vaccination_records": [
+    {
+      "vaccine": "兔瘟疫苗",
+      "date": "2024-01-10",
+      "next_due": "2024-07-10"
+    }
+  ],
+  "special_needs": "需要新鲜蔬菜和干草",
+  "good_with_kids": true,
+  "good_with_pets": false,
+  "energy_level": "low",
+  "training_level": "none",
+  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "location": "小动物区",
+  "rescue_date": "2024-01-05",
+  "rescue_story": "在公园被遗弃",
+  "adoption_fee": 150.00
+}
+
+###
+
+# 创建鸟类信息
+POST http://127.0.0.1:8001/animal/animals
+Content-Type: application/json
+
+{
+  "name": "彩虹",
+  "species": "bird",
+  "breed": "虎皮鹦鹉",
+  "age": 6,
+  "age_category": "young",
+  "gender": "unknown",
+  "size": "small",
+  "weight": 0.035,
+  "color": "绿色和黄色",
+  "description": "活泼的小鹦鹉，会说几个简单的词",
+  "personality": ["活泼", "聪明", "好奇"],
+  "health_status": "健康",
+  "medical_history": [],
+  "is_neutered": false,
+  "is_vaccinated": false,
+  "vaccination_records": [],
+  "special_needs": "需要鸟笼和专用饲料",
+  "good_with_kids": true,
+  "good_with_pets": false,
+  "energy_level": "high",
+  "training_level": "basic",
+  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "location": "鸟类区",
+  "rescue_date": "2024-01-20",
+  "rescue_story": "主人过敏无法继续饲养",
+  "adoption_fee": 80.00
+}
+
+###
+
+# 测试按体型筛选
+GET http://127.0.0.1:8001/animal/animals?size=large&species=dog
+Accept: application/json
+
+###
+
+# 测试按活跃度筛选
+GET http://127.0.0.1:8001/animal/animals?energy_level=high&good_with_kids=true
+Accept: application/json
+
+###
+
+# 测试按训练程度筛选
+GET http://127.0.0.1:8001/animal/animals?training_level=intermediate&species=dog
+Accept: application/json
+
+###
+
+# 测试按救助站筛选
+GET http://127.0.0.1:8001/animal/animals?shelter_id=550e8400-e29b-41d4-a716-446655440000&status=available
+Accept: application/json
+
+###
+
+# 测试关键词搜索
+GET http://127.0.0.1:8001/animal/animals?keyword=金毛&page=1&size=5
+Accept: application/json
+
+###
+
+# 测试排序功能
+GET http://127.0.0.1:8001/animal/animals?sort=age&order=asc&page=1&size=10
+Accept: application/json
+
+###
+
+# 测试按浏览量排序
+GET http://127.0.0.1:8001/animal/animals?sort=view_count&order=desc&page=1&size=10
+Accept: application/json
+
+###
+
+# 测试推荐功能（带用户ID）
+GET http://127.0.0.1:8001/animal/animals/recommendations?user_id=550e8400-e29b-41d4-a716-446655440000&limit=8
+Accept: application/json
+
+###
+
+# 测试推荐功能（访客用户）
+GET http://127.0.0.1:8001/animal/animals/recommendations?limit=5
+Accept: application/json
+
+###
+
+# 测试复杂筛选条件
+GET http://127.0.0.1:8001/animal/animals?species=cat&age_category=young&good_with_kids=true&good_with_pets=true&is_neutered=true&is_vaccinated=true&city=北京
+Accept: application/json
+
+###
+
+# 更新动物状态为待领养
+PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{
+  "status": "pending"
+}
+
+###
+
+# 更新动物状态为已领养
+PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{
+  "status": "adopted"
+}
+
+###
+
+# 测试单张图片上传
+POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="single_cat.jpg"
+Content-Type: image/jpeg
+
+< ./test_images/single_cat.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="alt_text"
+
+单张猫咪照片
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="is_primary"
+
+true
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# 测试错误的文件类型上传
+POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./test_files/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# 测试获取已领养的动物
+GET http://127.0.0.1:8001/animal/animals?status=adopted&page=1&size=10
+Accept: application/json
+
+###
+
+# 测试获取医疗观察中的动物
+GET http://127.0.0.1:8001/animal/animals?status=medical_hold&page=1&size=10
+Accept: application/json
+
+###
+
+# 测试分页功能
+GET http://127.0.0.1:8001/animal/animals?page=2&size=5
+Accept: application/json
+
+###
+
+# 测试大分页
+GET http://127.0.0.1:8001/animal/animals?page=1&size=50
+Accept: application/json
+
+###
+
+# 测试空结果筛选
+GET http://127.0.0.1:8001/animal/animals?species=elephant
+Accept: application/json
+
+###
+
+# 测试组合筛选 - 适合公寓的小型犬
+GET http://127.0.0.1:8001/animal/animals?species=dog&size=small&energy_level=low&good_with_kids=true&is_neutered=true
+Accept: application/json
+
+###
+
+# 测试组合筛选 - 适合有孩子家庭的猫
+GET http://127.0.0.1:8001/animal/animals?species=cat&good_with_kids=true&is_vaccinated=true&age_category=adult
+Accept: application/json
+
+###
+
+# 测试组合筛选 - 老年动物
+GET http://127.0.0.1:8001/animal/animals?age_category=senior&good_with_pets=true
+Accept: application/json
+
+###
+
+# 测试无效的动物ID更新
+PUT http://127.0.0.1:8001/animal/animals/invalid-id
+Content-Type: application/json
+
+{
+  "description": "测试无效ID"
+}
+
+###
+
+# 测试无效的动物ID删除
+DELETE http://127.0.0.1:8001/animal/animals/invalid-id
+Accept: application/json
+
+###
+
+# 测试获取特定救助站的所有动物
+GET http://127.0.0.1:8001/animal/animals?shelter_id=550e8400-e29b-41d4-a716-446655440000
+Accept: application/json
+
+###
+
+# 压力测试 - 获取大量数据
+GET http://127.0.0.1:8001/animal/animals?page=1&size=100
+Accept: application/json
