@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, date
-from typing import Optional, Literal
+from typing import Optional, Literal, Dict, Any
 from fastapi import UploadFile, File, Form
 
 
@@ -151,4 +151,45 @@ class UserStatisticsData(BaseModel):
 # 用户统计信息响应模型
 class UserStatisticsResponse(BaseResponse):
     data: Optional[UserStatisticsData] = None
+
+# 统一登录请求模型
+class UserLoginRequest(BaseModel):
+    username: str                           # 用户名或邮箱
+    password: str                          # 密码
+    remember: Optional[bool] = False       # 是否记住登录
+
+# 登录用户信息模型
+class LoginUserInfo(BaseModel):
+    user_id: str
+    username: str
+    email: str
+    user_type: str
+    avatar_url: Optional[str]
+
+# 登录响应数据模型
+class LoginResponseData(BaseModel):
+    access_token: str
+    refresh_token: str
+    expires_in: int
+    user: LoginUserInfo
+
+# 统一登录响应模型
+class LoginResponse(BaseResponse):
+    data: Optional[LoginResponseData] = None
+
+# Token刷新请求模型
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+# Token刷新响应模型
+class RefreshTokenResponse(BaseResponse):
+    data: Optional[Dict[str, Any]] = None
+
+# 登出请求模型
+class LogoutRequest(BaseModel):
+    access_token: str
+
+# 登出响应模型
+class LogoutResponse(BaseResponse):
+    pass
 

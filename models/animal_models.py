@@ -174,7 +174,7 @@ class AnimalListData(BaseModel):
     items: List[AnimalListItem]
     total: int
     page: int
-    size: int
+    size: str
     pages: int
 
 # 动物搜索筛选模型

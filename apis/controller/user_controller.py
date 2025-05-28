@@ -1,15 +1,23 @@
 from typing import Dict
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import hashlib
 from models import user_models
 from db import session
 from crud import user_crud
 
-from utils import random_utils, time_utils
+from utils import random_utils, time_utils, jwt_utils
 
 import os
 import uuid
 from fastapi import UploadFile
+import re
+
+try:
+    from utils import jwt_utils as token_utils
+    print("Using PyJWT")
+except Exception as e:
+    print(f"PyJWT not available: {e}, using built-in token system")
+    from utils import token_utils
 
 async def user_register_func(data: user_models.UserRegisterRequest):
     """
@@ -561,3 +569,181 @@ async def get_user_statistics_func(user_id: str):
         )
     finally:
         db_session.close()
+
+async def user_login_func(data: user_models.UserLoginRequest):
+    """
+    统一用户登录方法
+    :param data: 用户登录数据模型
+    :return: 登录响应
+    """
+    db_session = session.get_session()
+    
+    try:
+        # 判断输入的是邮箱还是用户名
+        is_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', data.username)
+        
+        if is_email:
+            # 邮箱登录
+            user_info = user_crud.get_user_by_email(db_session, data.username)
+        else:
+            # 用户名登录
+            user_info = user_crud.get_user_by_username(db_session, data.username)
+        
+        if not user_info:
+            return user_models.LoginResponse(
+                code=401,
+                message="用户名或密码错误"
+            )
+        
+        # 验证密码
+        password_hash = hashlib.sha256(data.password.encode()).hexdigest()
+        if user_info.password_hash != password_hash:
+            return user_models.LoginResponse(
+                code=401,
+                message="用户名或密码错误"
+            )
+        
+        # 检查用户状态
+        if user_info.status != 'active':
+            return user_models.LoginResponse(
+                code=403,
+                message="账户已被禁用"
+            )
+        
+        # 生成令牌
+        token_data = {
+            "user_id": user_info.user_id,
+            "username": user_info.username,
+            "user_type": user_info.user_type
+        }
+        
+        # 根据remember参数设置令牌过期时间
+        if data.remember:
+            access_expires = timedelta(days=7)  # 记住登录：7天
+            refresh_expires = timedelta(days=90)  # 刷新令牌：90天
+            expires_in = 7 * 24 * 3600  # 7天的秒数
+        else:
+            access_expires = timedelta(hours=1)  # 普通登录：1小时
+            refresh_expires = timedelta(days=30)  # 刷新令牌：30天
+            expires_in = 3600  # 1小时的秒数
+        
+        access_token = jwt_utils.create_access_token(token_data, access_expires)
+        refresh_token = jwt_utils.create_refresh_token(token_data, refresh_expires)
+        
+        # 更新最后登录时间
+        user_crud.update_user_info(db_session, user_info.user_id, {
+            "last_login_at": datetime.utcnow()
+        })
+        
+        # 构造用户信息
+        user_info_data = user_models.LoginUserInfo(
+            user_id=user_info.user_id,
+            username=user_info.username,
+            email=user_info.email,
+            user_type=user_info.user_type,
+            avatar_url=user_info.avatar_url
+        )
+        
+        # 构造响应数据
+        response_data = user_models.LoginResponseData(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=expires_in,
+            user=user_info_data
+        )
+        
+        return user_models.LoginResponse(
+            code=200,
+            message="登录成功",
+            data=response_data
+        )
+        
+    except Exception as e:
+        print(f"Login error: {e}")
+        return user_models.LoginResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        db_session.close()
+
+async def refresh_token_func(data: user_models.RefreshTokenRequest):
+    """
+    刷新访问令牌
+    """
+    try:
+        # 验证刷新令牌
+        payload = jwt_utils.decode_refresh_token(data.refresh_token)
+        if not payload:
+            return user_models.RefreshTokenResponse(
+                code=401,
+                message="刷新令牌无效或已过期"
+            )
+        
+        # 获取用户信息
+        db_session = session.get_session()
+        user_info = user_crud.get_user_by_id(db_session, payload.get("user_id"))
+        
+        if not user_info or user_info.status != 'active':
+            return user_models.RefreshTokenResponse(
+                code=401,
+                message="用户不存在或已被禁用"
+            )
+        
+        # 生成新的访问令牌
+        token_data = {
+            "user_id": user_info.user_id,
+            "username": user_info.username,
+            "user_type": user_info.user_type
+        }
+        
+        new_access_token = jwt_utils.create_access_token(token_data)
+        
+        return user_models.RefreshTokenResponse(
+            code=200,
+            message="令牌刷新成功",
+            data={
+                "access_token": new_access_token,
+                "expires_in": jwt_utils.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+            }
+        )
+        
+    except Exception as e:
+        print(f"Refresh token error: {e}")
+        return user_models.RefreshTokenResponse(
+            code=500,
+            message="服务器内部错误"
+        )
+    finally:
+        if 'db_session' in locals():
+            db_session.close()
+
+async def logout_func(data: user_models.LogoutRequest):
+    """
+    用户登出
+    注意：由于JWT是无状态的，这里主要是客户端清除令牌
+    如果需要服务端令牌黑名单，需要额外的Redis或数据库存储
+    """
+    try:
+        # 验证令牌格式
+        payload = jwt_utils.decode_access_token(data.access_token)
+        if not payload:
+            return user_models.LogoutResponse(
+                code=401,
+                message="无效的访问令牌"
+            )
+        
+        # 这里可以添加令牌黑名单逻辑
+        # 例如：将令牌添加到Redis黑名单中
+        
+        return user_models.LogoutResponse(
+            code=200,
+            message="登出成功"
+        )
+        
+    except Exception as e:
+        print(f"Logout error: {e}")
+        return user_models.LogoutResponse(
+            code=500,
+            message="服务器内部错误"
+        )

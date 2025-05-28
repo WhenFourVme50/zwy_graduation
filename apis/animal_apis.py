@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/animals", response_model=animal_models.AnimalListResponse)
 async def get_animals(
     page: int = Query(1, ge=1, description="页码"),
-    size: int = Query(10, ge=1, le=100, description="每页数量"),
+    size: str = Query("large", description="每页数量"),
     species: Optional[str] = Query(None, description="物种筛选"),
     breed: Optional[str] = Query(None, description="品种筛选"),
     age_category: Optional[str] = Query(None, description="年龄段筛选"),

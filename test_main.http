@@ -322,7 +322,7 @@ Content-Type: application/json
   "good_with_pets": true,
   "energy_level": "medium",
   "training_level": "basic",
-  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "shelter_id": "83bb219a-482a-4c48-8dae-d92b762d92f1",
   "location": "救助站",
   "rescue_date": "2024-01-01",
   "rescue_story": "在街头被发现",
@@ -332,13 +332,13 @@ Content-Type: application/json
 ###
 
 # 获取动物详情
-GET http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+GET http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63
 Accept: application/json
 
 ###
 
 # 更新动物信息
-PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+PUT http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63
 Content-Type: application/json
 
 {
@@ -356,7 +356,7 @@ Accept: application/json
 ###
 
 # 上传动物图片
-POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+POST http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63/images
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -390,7 +390,7 @@ false
 ###
 
 # 删除动物信息
-DELETE http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+DELETE http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63
 Accept: application/json
 
 ###
@@ -467,7 +467,7 @@ Content-Type: application/json
   "good_with_pets": true,
   "energy_level": "high",
   "training_level": "intermediate",
-  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "shelter_id": "83bb219a-482a-4c48-8dae-d92b762d92f1",
   "location": "救助站后院",
   "rescue_date": "2023-12-01",
   "rescue_story": "主人搬家无法继续饲养，主动送到救助站",
@@ -508,7 +508,7 @@ Content-Type: application/json
   "good_with_pets": false,
   "energy_level": "low",
   "training_level": "none",
-  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "shelter_id": "83bb219a-482a-4c48-8dae-d92b762d92f1",
   "location": "小动物区",
   "rescue_date": "2024-01-05",
   "rescue_story": "在公园被遗弃",
@@ -543,7 +543,7 @@ Content-Type: application/json
   "good_with_pets": false,
   "energy_level": "high",
   "training_level": "basic",
-  "shelter_id": "550e8400-e29b-41d4-a716-446655440000",
+  "shelter_id": "83bb219a-482a-4c48-8dae-d92b762d92f1",
   "location": "鸟类区",
   "rescue_date": "2024-01-20",
   "rescue_story": "主人过敏无法继续饲养",
@@ -571,13 +571,13 @@ Accept: application/json
 ###
 
 # 测试按救助站筛选
-GET http://127.0.0.1:8001/animal/animals?shelter_id=550e8400-e29b-41d4-a716-446655440000&status=available
+GET http://127.0.0.1:8001/animal/animals?shelter_id=7c2d8f90-4249-4b4b-9767-fedb3cf07a63&status=available
 Accept: application/json
 
 ###
 
 # 测试关键词搜索
-GET http://127.0.0.1:8001/animal/animals?keyword=金毛&page=1&size=5
+GET http://127.0.0.1:8001/animal/animals?keyword=大黄&page=1&size=5
 Accept: application/json
 
 ###
@@ -595,7 +595,7 @@ Accept: application/json
 ###
 
 # 测试推荐功能（带用户ID）
-GET http://127.0.0.1:8001/animal/animals/recommendations?user_id=550e8400-e29b-41d4-a716-446655440000&limit=8
+GET http://127.0.0.1:8001/animal/animals/recommendations?user_id=7c2d8f90-4249-4b4b-9767-fedb3cf07a63&limit=8
 Accept: application/json
 
 ###
@@ -613,7 +613,7 @@ Accept: application/json
 ###
 
 # 更新动物状态为待领养
-PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+PUT http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63
 Content-Type: application/json
 
 {
@@ -623,7 +623,7 @@ Content-Type: application/json
 ###
 
 # 更新动物状态为已领养
-PUT http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000
+PUT http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63
 Content-Type: application/json
 
 {
@@ -633,7 +633,7 @@ Content-Type: application/json
 ###
 
 # 测试单张图片上传
-POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+POST http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63/images
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -654,7 +654,7 @@ true
 ###
 
 # 测试错误的文件类型上传
-POST http://127.0.0.1:8001/animal/animals/550e8400-e29b-41d4-a716-446655440000/images
+POST http://127.0.0.1:8001/animal/animals/7c2d8f90-4249-4b4b-9767-fedb3cf07a63/images
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -731,11 +731,115 @@ Accept: application/json
 ###
 
 # 测试获取特定救助站的所有动物
-GET http://127.0.0.1:8001/animal/animals?shelter_id=550e8400-e29b-41d4-a716-446655440000
+GET http://127.0.0.1:8001/animal/animals?shelter_id=83bb219a-482a-4c48-8dae-d92b762d92f1
 Accept: application/json
 
 ###
 
 # 压力测试 - 获取大量数据
 GET http://127.0.0.1:8001/animal/animals?page=1&size=100
+Accept: application/json
+
+###
+
+
+# 统一登录接口测试
+
+# 用户名登录
+POST http://127.0.0.1:8001/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "password": "password123",
+  "remember": false
+}
+
+###
+
+# 邮箱登录
+POST http://127.0.0.1:8001/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser001@example.com",
+  "password": "password123",
+  "remember": true
+}
+
+###
+
+# 记住登录测试
+POST http://127.0.0.1:8001/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "volunteer001",
+  "password": "password123",
+  "remember": true
+}
+
+###
+
+# 错误密码测试
+POST http://127.0.0.1:8001/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "password": "wrongpassword",
+  "remember": false
+}
+
+###
+
+# 不存在用户测试
+POST http://127.0.0.1:8001/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "nonexistentuser",
+  "password": "password123",
+  "remember": false
+}
+
+###
+
+# 刷新令牌测试（请替换为实际的refresh_token）
+POST http://127.0.0.1:8001/user/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "实际的刷新令牌"
+}
+
+###
+
+# 登出测试（请替换为实际的access_token）
+POST http://127.0.0.1:8001/user/auth/logout
+Content-Type: application/json
+
+{
+  "access_token": "实际的访问令牌"
+}
+
+###
+
+# 使用令牌访问受保护的接口（需要在header中添加Authorization）
+GET http://127.0.0.1:8001/user/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer 实际的访问令牌
+Accept: application/json
+
+###
+
+# 测试无效令牌
+GET http://127.0.0.1:8001/user/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer invalid_token
+Accept: application/json
+
+###
+
+# 测试过期令牌
+GET http://127.0.0.1:8001/user/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer expired_token
 Accept: application/json

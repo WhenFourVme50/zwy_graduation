@@ -40,18 +40,23 @@ async def upload_avatar(
 async def get_user_statistics(user_id: str = Path(..., description="用户ID")):
     return await user_controller.get_user_statistics_func(user_id)
 
-# 用户邮箱登录接口
-@router.post("/login_by_email", response_model=user_models.UserLoginResponse)
-async def user_login_by_email(data: user_models.UserLoginByEmailRequest):
-    return await user_controller.user_login_by_email_func(data)
+# 统一登录接口
+@router.post("/auth/login", response_model=user_models.LoginResponse)
+async def user_login(data: user_models.UserLoginRequest):
+    return await user_controller.user_login_func(data)
 
-# 用户手机号登录接口
-@router.post("/login_by_phone", response_model=user_models.UserLoginResponse)
-async def user_login_by_id(data: user_models.UserLoginByPhoneRequest):
-    return await user_controller.user_login_by_phone_func(data)
+# 刷新令牌接口
+@router.post("/auth/refresh", response_model=user_models.RefreshTokenResponse)
+async def refresh_token(data: user_models.RefreshTokenRequest):
+    return await user_controller.refresh_token_func(data)
+
+# 登出接口
+@router.post("/auth/logout", response_model=user_models.LogoutResponse)
+async def logout(data: user_models.LogoutRequest):
+    return await user_controller.logout_func(data)
 
 # 原有用户注册按钮（保持兼容性）
-@router.post("/logup", response_model=user_models.UserLogupResponse)
+@router.post("/auth/logup", response_model=user_models.UserLogupResponse)
 async def user_logup(data: user_models.UserLogupRequest):
     return await user_controller.user_logup_func(data)
 

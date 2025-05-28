@@ -8,7 +8,7 @@ from crud import animal_crud, animal_image_crud
 
 async def get_animals_func(
     page: int = 1,
-    size: int = 10,
+    size: str = "large",
     species: Optional[str] = None,
     breed: Optional[str] = None,
     age_category: Optional[str] = None,
