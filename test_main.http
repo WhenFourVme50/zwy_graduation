@@ -198,3 +198,81 @@ Accept: application/json
 # 测试不存在的用户
 GET http://127.0.0.1:8001/user/users/00000000-0000-0000-0000-000000000000
 Accept: application/json
+
+# 获取救助站列表
+GET http://127.0.0.1:8001/shelter/shelters
+Accept: application/json
+
+###
+
+# 获取救助站列表（带筛选）
+GET http://127.0.0.1:8001/shelter/shelters?page=1&size=5&city=北京&status=active
+Accept: application/json
+
+###
+
+# 搜索救助站
+GET http://127.0.0.1:8001/shelter/shelters?keyword=动物救助&page=1&size=10
+Accept: application/json
+
+###
+
+# 创建救助站
+POST http://127.0.0.1:8001/shelter/shelters
+Content-Type: application/json
+
+{
+  "name": "北京爱心动物救助站",
+  "description": "专业的动物救助和领养服务机构，致力于为流浪动物提供温暖的家",
+  "address": "北京市朝阳区某某街道123号",
+  "city": "北京",
+  "province": "北京",
+  "postal_code": "100000",
+  "phone": "010-12345678",
+  "email": "info@bjpetrescue.com",
+  "website": "https://www.bjpetrescue.com",
+  "license_number": "京动救字001号",
+  "capacity": 200,
+  "established_date": "2020-01-15",
+  "operating_hours": {
+    "monday": "09:00-18:00",
+    "tuesday": "09:00-18:00",
+    "wednesday": "09:00-18:00",
+    "thursday": "09:00-18:00",
+    "friday": "09:00-18:00",
+    "saturday": "09:00-17:00",
+    "sunday": "10:00-16:00"
+  },
+  "services": ["rescue", "adoption", "medical", "foster", "education"]
+}
+
+###
+
+# 获取救助站详情
+GET http://127.0.0.1:8001/shelter/shelters/83bb219a-482a-4c48-8dae-d92b762d92f1
+Accept: application/json
+
+###
+
+# 更新救助站信息
+PUT http://127.0.0.1:8001/shelter/shelters/83bb219a-482a-4c48-8dae-d92b762d92f1
+Content-Type: application/json
+
+{
+  "description": "更新后的救助站描述",
+  "capacity": 250,
+  "website": "https://www.updated-shelter.com",
+  "services": ["rescue", "adoption", "medical", "foster", "education", "training"]
+}
+
+###
+
+# 获取救助站统计信息
+GET http://127.0.0.1:8001/shelter/shelters/83bb219a-482a-4c48-8dae-d92b762d92f1/statistics
+Accept: application/json
+
+###
+
+# 测试不存在的救助站
+GET http://127.0.0.1:8001/shelter/shelters/00000000-0000-0000-0000-000000000000
+Accept: application/json

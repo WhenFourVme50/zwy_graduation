@@ -1,9 +1,21 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from apis.user_apis import router as user_routers
+from apis.shelter_apis import router as shelter_routers
 
 app = FastAPI()
 
+# 配置CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 允许所有来源，生产环境建议指定具体域名
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有HTTP方法
+    allow_headers=["*"],  # 允许所有请求头
+)
+
 app.include_router(user_routers, prefix="/user")
+app.include_router(shelter_routers, prefix="/shelter")
 
 @app.get("/")
 async def root():
