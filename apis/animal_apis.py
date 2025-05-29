@@ -10,13 +10,13 @@ router = APIRouter()
 @router.get("/animals", response_model=animal_models.AnimalListResponse)
 async def get_animals(
     page: int = Query(1, ge=1, description="页码"),
-    size: str = Query("large", description="每页数量"),
-    species: Optional[str] = Query(None, description="物种筛选"),
+    size: int = Query(10, ge=1, le=100, description="每页数量"),
+    species: Optional[str] = Query(None, description="物种筛选: cat, dog, rabbit, bird, other"),
     breed: Optional[str] = Query(None, description="品种筛选"),
-    age_category: Optional[str] = Query(None, description="年龄段筛选"),
-    gender: Optional[str] = Query(None, description="性别筛选"),
-    size_filter: Optional[str] = Query(None, alias="size", description="体型筛选"),
-    status: Optional[str] = Query(None, description="状态筛选"),
+    age_category: Optional[str] = Query(None, description="年龄段: baby, young, adult, senior"),
+    gender: Optional[str] = Query(None, description="性别: male, female, unknown"),
+    animal_size: Optional[str] = Query(None, description="体型: small, medium, large, extra_large"),
+    status: Optional[str] = Query(None, description="状态: available, pending, adopted, medical_hold, not_available"),
     shelter_id: Optional[str] = Query(None, description="救助站ID"),
     city: Optional[str] = Query(None, description="城市筛选"),
     good_with_kids: Optional[bool] = Query(None, description="适合有孩子的家庭"),
@@ -24,8 +24,8 @@ async def get_animals(
     is_neutered: Optional[bool] = Query(None, description="是否绝育"),
     is_vaccinated: Optional[bool] = Query(None, description="是否接种疫苗"),
     keyword: Optional[str] = Query(None, description="关键词搜索"),
-    sort: str = Query("created_at", description="排序字段"),
-    order: str = Query("desc", description="排序方向")
+    sort: str = Query("created_at", description="排序字段: created_at, age, name, view_count"),
+    order: str = Query("desc", description="排序方向: asc, desc")
 ):
     return await animal_controller.get_animals_func(
         page=page,
@@ -34,7 +34,7 @@ async def get_animals(
         breed=breed,
         age_category=age_category,
         gender=gender,
-        size_filter=size_filter,
+        animal_size=animal_size,
         status=status,
         shelter_id=shelter_id,
         city=city,

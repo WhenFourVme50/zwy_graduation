@@ -8,12 +8,12 @@ from crud import animal_crud, animal_image_crud
 
 async def get_animals_func(
     page: int = 1,
-    size: str = "large",
+    size: int = 10,  # 这是每页数量
     species: Optional[str] = None,
     breed: Optional[str] = None,
     age_category: Optional[str] = None,
     gender: Optional[str] = None,
-    size_filter: Optional[str] = None,
+    animal_size: Optional[str] = None,  # 这是动物体型
     status: Optional[str] = None,
     shelter_id: Optional[str] = None,
     city: Optional[str] = None,
@@ -31,16 +31,20 @@ async def get_animals_func(
     db_session = session.get_session()
     
     try:
+        # 确保参数类型正确
+        page = int(page) if page else 1
+        size = int(size) if size else 10
+        
         # 获取分页数据
         result = animal_crud.get_animals_with_extended_info(
             db=db_session,
             page=page,
-            size=size,
+            size=size,  # 每页数量
             species=species,
             breed=breed,
             age_category=age_category,
             gender=gender,
-            size_filter=size_filter,
+            size_filter=animal_size,  # 动物体型筛选
             status=status,
             shelter_id=shelter_id,
             city=city,

@@ -843,3 +843,17 @@ Accept: application/json
 GET http://127.0.0.1:8001/user/users/550e8400-e29b-41d4-a716-446655440000
 Authorization: Bearer expired_token
 Accept: application/json
+
+###
+
+# 获取动物列表 - 基本分页
+GET http://127.0.0.1:8001/animal/animals?page=1&size=10
+Accept: application/json
+
+###
+
+# 获取动物列表 - 大型犬筛选
+GET http://127.0.0.1:8001/animal/animals?page=1&size=5&species=dog&animal_size=large
+Accept: application/json
+
+###
