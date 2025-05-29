@@ -857,3 +857,114 @@ GET http://127.0.0.1:8001/animal/animals?page=1&size=5&species=dog&animal_size=l
 Accept: application/json
 
 ###
+
+# ========================= 领养申请管理 =========================
+
+# 提交领养申请
+POST http://127.0.0.1:8001/adoptions/applications
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOGI0ZGM4MzAtOTdmOS00OTlmLWE0YWMtM2YzMGJjZmI3NGQ4IiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjAwMSIsInVzZXJfdHlwZSI6InVzZXIiLCJleHAiOjE3NDg0OTMzMzMsInR5cGUiOiJhY2Nlc3MifQ.W6ROaasCVJoqa94uQFvXCZ4swdRDL2bw8ftMaYHZDKs
+
+{
+  "animal_id": "0c12ef6d-cdb8-4114-bc27-209e90b13125",
+  "reason": "我很喜欢小动物，希望给它一个温暖的家。我有充足的时间和精力照顾它，也有稳定的经济能力承担相关费用。",
+  "previous_experience": "曾经养过猫咪3年，有丰富的养宠经验",
+  "living_situation": {
+    "housing_type": "apartment",
+    "own_or_rent": "own",
+    "yard": false,
+    "other_pets": false,
+    "children": true,
+    "children_ages": [8, 12]
+  },
+  "family_info": {
+    "family_size": 4,
+    "primary_caregiver": "申请人",
+    "work_schedule": "朝九晚五",
+    "travel_frequency": "偶尔"
+  },
+  "veterinarian_info": {
+    "clinic_name": "爱心宠物医院",
+    "vet_name": "张医生",
+    "phone": "010-12345678"
+  },
+  "references": [
+    {
+      "name": "李朋友",
+      "relationship": "朋友",
+      "phone": "138-0000-0000"
+    }
+  ]
+}
+
+###
+
+# 获取领养申请详情
+GET http://127.0.0.1:8001/adoptions/applications/application_id_here
+Accept: application/json
+
+###
+
+# 获取领养申请列表
+GET http://127.0.0.1:8001/adoptions/applications?page=1&size=10
+Accept: application/json
+
+###
+
+# 按状态筛选申请
+GET http://127.0.0.1:8001/adoptions/applications?page=1&size=10&status=pending
+Accept: application/json
+
+###
+
+# 按动物筛选申请
+GET http://127.0.0.1:8001/adoptions/applications?page=1&size=10&animal_id=7c2d8f90-4249-4b4b-9767-fedb3cf07a63
+Accept: application/json
+
+###
+
+# 管理员审核申请 - 批准
+PUT http://127.0.0.1:8001/adoptions/applications/application_id_here/review
+Content-Type: application/json
+Authorization: Bearer admin_access_token_here
+
+{
+  "status": "approved",
+  "approval_notes": "申请人条件符合要求，批准领养",
+  "home_visit_required": true,
+  "interview_date": "2024-02-01T14:00:00Z"
+}
+
+###
+
+# 管理员审核申请 - 拒绝
+PUT http://127.0.0.1:8001/adoptions/applications/application_id_here/review
+Content-Type: application/json
+Authorization: Bearer admin_access_token_here
+
+{
+  "status": "rejected",
+  "rejection_reason": "居住条件不适合该动物"
+}
+
+###
+
+# 用户取消申请
+PUT http://127.0.0.1:8001/adoptions/applications/application_id_here/cancel
+Authorization: Bearer user_access_token_here
+
+###
+
+# 获取我的申请列表
+GET http://127.0.0.1:8001/adoptions/my-applications?page=1&size=10
+Authorization: Bearer user_access_token_here
+Accept: application/json
+
+###
+
+# 获取我的待处理申请
+GET http://127.0.0.1:8001/adoptions/my-applications?page=1&size=10&status=pending
+Authorization: Bearer user_access_token_here
+Accept: application/json
+
+###
